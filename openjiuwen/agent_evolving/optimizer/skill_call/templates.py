@@ -173,7 +173,7 @@ SKILL_EXPERIENCE_GENERATE_PROMPT_CN = """\
 7. 多个发现指向同一问题时合并为一条；不同问题分别生成
 8. 文本经验（action 为 append，target 为 description/body）最多 5 条；脚本经验（target 为 script）最多 3 条
 9. 脚本经验的 content 字段直接放完整脚本源码，同时填写 script_filename、script_language、script_purpose
-10. 每条 append 经验必须填写 summary：一句话说明“何时适用 + 应做什么/避免什么”，不要换行、表格或代码块，**不超过 100 字**
+10. 每条 append 经验必须填写 summary：用一句普通人能看懂的话，说明「什么时候用这条经验、该怎么做或别做什么」；用日常说法，少用专业术语；不要换行、表格或代码块；**不超过 100 字**
 11. 每条 append 经验必须填写 keywords：6-12 个检索关键词，优先代码标识符/英文报错关键字，可附带中文术语以提升跨用户召回
 12. 每条 append 经验必须填写 root_cause：一句话说明触发该经验的原因（不要列表）
 
@@ -185,7 +185,7 @@ SKILL_EXPERIENCE_GENERATE_PROMPT_CN = """\
     "skip_reason": "irrelevant | duplicate | low_priority | unsafe（仅 action 为 skip 时填写，否则为 null）",
     "target": "description | body | script",
     "section": "Instructions | Examples | Troubleshooting | Scripts",
-    "summary": "一句话经验摘要，≤100字（仅 action 为 append 时填写，否则为 null）",
+    "summary": "一句通俗说明：何时用、怎么做；≤100字，普通人能看懂（仅 append 时填写，否则为 null）",
     "keywords": ["6-12 个关键词（仅 action 为 append 时填写）"],
     "root_cause": "触发该经验的原因（一句话，仅 action 为 append 时填写，否则为 null）",
     "content": "Markdown 内容或脚本源码（仅 action 为 append 时填写）",
@@ -308,7 +308,7 @@ Determine the experience's target layer (target) and section (section), then gen
 7. When multiple findings point to the same issue, merge into one entry; generate separately for different issues
 8. Text experiences (action "append", target description/body): at most 5; script experiences (target script): at most 3
 9. For script experiences, put the full script source code in the content field, and fill in script_filename, script_language, script_purpose
-10. Every append experience must include summary: one sentence describing when it applies and what to do or avoid; no newlines, tables, or code blocks; **at most 100 characters**
+10. Every append experience must include summary: one plain sentence anyone can understand — when to use this tip and what to do or avoid; everyday words, little jargon; no newlines, tables, or code blocks; **at most 100 characters**
 11. Every append experience must include keywords: 6-12 retrieval keywords; prefer code identifiers / English error keywords; you may add matching Chinese terms for cross-user recall
 12. Every append experience must include root_cause: one sentence explaining why this experience was triggered (not a list)
 
@@ -320,7 +320,7 @@ Output only the following JSON array, nothing else (even if there is only one en
     "skip_reason": "irrelevant | duplicate | low_priority | unsafe (fill only when action is skip, otherwise null)",
     "target": "description | body | script",
     "section": "Instructions | Examples | Troubleshooting | Scripts",
-    "summary": "one-sentence experience summary, ≤100 chars (only when action is append, otherwise null)",
+    "summary": "one plain sentence: when to use it and what to do; ≤100 chars, easy for non-experts (append only, else null)",
     "keywords": ["6-12 keywords (only when action is append)"],
     "root_cause": "why this experience was triggered (one sentence; only when action is append, otherwise null)",
     "content": "Markdown content or script source code (fill only when action is append)",
@@ -351,7 +351,7 @@ JSON_FIX_PROMPT = """\
     "skip_reason": "irrelevant | duplicate | low_priority | unsafe（仅 skip 时填写，否则为 null）",
     "target": "description | body | script",
     "section": "Instructions | Examples | Troubleshooting | Scripts",
-    "summary": "一句话经验摘要或 null",
+    "summary": "一句通俗说明：何时用、怎么做；≤100字，普通人能看懂；或 null",
     "keywords": ["关键词列表或 null"],
     "content": "Markdown 内容（注意 JSON 转义：换行用 \\\\n，引号用 \\\\"）",
     "merge_target": "ev_xxxxxxxx 或 null",
@@ -488,7 +488,7 @@ candidates 中 action=append 的条目：**文本最多 5 条，脚本最多 3 �
 ## 内容规范
 
 - 语言与 Skill 一致；1 标题 + 2-3 列表项；可复用通用规则；单条 content 草稿 ≤500 字符
-- 每条 append 候选必须填写 summary：一句话说明“何时适用 + 应做什么/避免什么”，不要换行、表格或代码块，**不超过 100 字**
+- 每条 append 候选必须填写 summary：用一句普通人能看懂的话，说明「什么时候用这条经验、该怎么做或别做什么」；用日常说法，少用专业术语；不要换行、表格或代码块；**不超过 100 字**
 - 每条 append 候选必须填写 keywords：6-12 个检索关键词，优先代码标识符/英文报错关键字，可附带中文术语
 - 每条 append 候选应填写 root_cause：一句话说明触发该经验的原因（不要列表）；可复用顶层 root_cause，或给出本候选专属原因
 
@@ -510,7 +510,7 @@ candidates 中 action=append 的条目：**文本最多 5 条，脚本最多 3 �
       "action": "append",
       "target": "description | body | script",
       "section": "Instructions | Examples | Troubleshooting | Scripts",
-      "summary": "一句话经验摘要（≤100字）",
+      "summary": "一句通俗说明：何时用、怎么做；≤100字，普通人能看懂",
       "keywords": ["6-12 个检索关键词"],
       "root_cause": "触发该经验的原因（一句话）",
       "content": "Markdown 或脚本源码草稿",
@@ -570,7 +570,7 @@ action=append entries in candidates: **at most 5 text, 3 script**, counted indep
 ## Content Guidelines
 
 - Match Skill language; 1 heading + 2-3 list items; reusable rules; draft content ≤500 chars per entry
-- Every append candidate must include summary: one sentence describing when it applies and what to do or avoid; no newlines, tables, or code blocks; **at most 100 characters**
+- Every append candidate must include summary: one plain sentence anyone can understand — when to use this tip and what to do or avoid; everyday words, little jargon; no newlines, tables, or code blocks; **at most 100 characters**
 - Every append candidate must include keywords: 6-12 retrieval keywords; prefer code identifiers / English error keywords; you may add matching Chinese terms
 - Every append candidate should include root_cause: one sentence explaining why this experience was triggered (not a list); reuse top-level root_cause, or provide a candidate-specific reason
 
@@ -592,7 +592,7 @@ Output only the following JSON object, nothing else:
       "action": "append",
       "target": "description | body | script",
       "section": "Instructions | Examples | Troubleshooting | Scripts",
-      "summary": "one-sentence experience summary (≤100 chars)",
+      "summary": "one plain sentence: when to use it and what to do; ≤100 chars, easy for non-experts",
       "keywords": ["6-12 retrieval keywords"],
       "root_cause": "why this experience was triggered (one sentence)",
       "content": "Markdown or script source draft",
@@ -634,7 +634,7 @@ SKILL_EXPERIENCE_FORMATTER_PROMPT_CN = """\
     "skip_reason": "irrelevant | duplicate | low_priority | unsafe（仅 skip 时填写，否则为 null）",
     "target": "description | body | script",
     "section": "Instructions | Examples | Troubleshooting | Scripts",
-    "summary": "一句话经验摘要，≤100字（仅 action 为 append 时填写，否则为 null）",
+    "summary": "一句通俗说明：何时用、怎么做；≤100字，普通人能看懂（仅 append 时填写，否则为 null）",
     "keywords": ["6-12 个关键词（仅 action 为 append 时填写）"],
     "root_cause": "触发该经验的原因（一句话，仅 action 为 append 时填写，否则为 null）",
     "content": "Markdown 内容或脚本源码（仅 append 时填写）",
@@ -647,7 +647,7 @@ SKILL_EXPERIENCE_FORMATTER_PROMPT_CN = """\
 
 规则：
 1. 保留分析阶段所有 action=append 的候选（文本≤5，脚本≤3）
-2. 必须保留或补全每条 append 的 summary 与 keywords：优先沿用分析阶段字段；若缺失则根据 content 补写；summary 不超过 100 字
+2. 必须保留或补全每条 append 的 summary 与 keywords：优先沿用分析阶段字段；若缺失则根据 content 补写；summary 要用普通人能看懂的话说清「何时用、怎么做」，不超过 100 字
 3. 必须保留或补全每条 append 的 root_cause：优先沿用候选自身字段；若缺失则复用分析阶段顶层 root_cause（一句话，不要列表）
 4. content 中的换行用 \\n，引号正确转义
 5. merge_target 为 null 时写 null，不要写字符串 "null\""""
@@ -673,7 +673,7 @@ Output only the following JSON array, nothing else (wrap in an array even for a 
     "skip_reason": "irrelevant | duplicate | low_priority | unsafe (only when action is skip, else null)",
     "target": "description | body | script",
     "section": "Instructions | Examples | Troubleshooting | Scripts",
-    "summary": "one-sentence experience summary, ≤100 chars (only when action is append, otherwise null)",
+    "summary": "one plain sentence: when to use it and what to do; ≤100 chars, easy for non-experts (append only, else null)",
     "keywords": ["6-12 keywords (only when action is append)"],
     "root_cause": "why this experience was triggered (one sentence; only when action is append, otherwise null)",
     "content": "Markdown or script source (only when action is append)",
@@ -686,7 +686,7 @@ Output only the following JSON array, nothing else (wrap in an array even for a 
 
 Rules:
 1. Keep all action=append candidates from the analyzer (text≤5, script≤3)
-2. Preserve or complete summary and keywords for every append entry: prefer analyzer fields; if missing, synthesize from content; summary must be ≤100 chars
+2. Preserve or complete summary and keywords for every append entry: prefer analyzer fields; if missing, synthesize from content; summary must be plain language (when to use / what to do), ≤100 chars, easy for non-experts
 3. Preserve or complete root_cause for every append entry: prefer candidate fields; if missing, reuse analyzer top-level root_cause (one sentence, not a list)
 4. Escape newlines as \\n and quotes correctly in content
 5. Use null for merge_target when absent, not the string "null\""""

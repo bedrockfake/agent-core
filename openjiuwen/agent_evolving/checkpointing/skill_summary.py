@@ -17,25 +17,27 @@ from openjiuwen.core.common.logging import logger
 _LLM_MAX_TOKENS = 256
 
 _SKILL_SUMMARY_PROMPT_CN = """\
-你是 Skill 经验摘要助手。请根据下方该 Skill 的全部演进经验，写一句不超过 {max_chars} 字的中文总摘要。
+请根据下面这个技能已经记下的全部经验，用一句普通人能看懂的话做个总概括。
 
-要求：
-- 只输出这一句摘要正文，不要标题、编号、引号或 Markdown
-- 概括该 Skill 已沉淀的核心能力/排查要点，不要罗列经验 ID
-- 不超过 {max_chars} 字
+写作要求：
+- 用日常说法，别用专业术语；让不懂技术的人也能明白大概在说什么
+- 只写这一句话，不要标题、编号、引号或 Markdown
+- 说清楚这个技能主要帮人解决什么问题、要注意什么；不要罗列经验编号
+- 整句不超过 {max_chars} 个字
 
-Skill: {skill_id}
+技能名称: {skill_id}
 
 经验列表:
 {records_json}
 """
 
 _SKILL_SUMMARY_PROMPT_EN = """\
-You are a skill experience summarizer. Based on all evolution experiences below, write one English summary of at most {max_chars} characters.
+Based on all saved tips for this skill below, write one plain-language overview sentence that a non-expert can understand.
 
-Rules:
-- Output only the summary sentence (no title, bullets, quotes, or Markdown)
-- Capture the skill's core guidance themes; do not list experience IDs
+Writing rules:
+- Use everyday words; avoid jargon so anyone can grasp the meaning
+- Output only that one sentence (no title, bullets, quotes, or Markdown)
+- Say what this skill mainly helps with and what to watch out for; do not list experience IDs
 - At most {max_chars} characters
 
 Skill: {skill_id}
