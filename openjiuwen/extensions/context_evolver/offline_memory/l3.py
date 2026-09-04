@@ -64,7 +64,8 @@ async def propose_actions(
 ) -> L3ActionsResult:
     """Call ``model`` for one episode's reflect+curate step against the
     current playbook. Returns the raw action list; ``apply_actions`` does
-    the actual playbook mutation."""
+    the actual playbook mutation.
+    """
     messages = [
         SystemMessage(content=L3_SYSTEM_PROMPT),
         UserMessage(
@@ -119,7 +120,8 @@ def apply_actions(
     """Mutate ``playbook`` in place per ``actions`` (from ``propose_actions``).
     Pure bank-state mutation — no LLM calls, no knowledge of episode/trace
     format. Counters + evidence + last_updated only — never description
-    text (that's deliberately left untouched here; see module docstring)."""
+    text (that's deliberately left untouched here; see module docstring).
+    """
     items = playbook.setdefault("items", {})
     counts = {"reinforced": 0, "contradicted": 0, "added": 0, "skipped": 0}
     now = _now()
@@ -234,7 +236,8 @@ def format_items_for_dedup(items: dict) -> str:
 
 async def propose_merges(model: Model, *, task_category: str, items_block: str, retries: int = 3) -> L3MergesResult:
     """Call ``model`` to group near-duplicate active playbook items into
-    merge proposals. ``apply_merges`` does the actual playbook mutation."""
+    merge proposals. ``apply_merges`` does the actual playbook mutation.
+    """
     messages = [
         SystemMessage(content=_DEDUP_SYSTEM_PROMPT),
         UserMessage(content=f"Task category: {task_category}\n\nActive items:\n{items_block}"),
@@ -261,7 +264,8 @@ def apply_deprecation_pass(items: dict) -> list[str]:
     total data points gets status="deprecated". A single contradiction can
     never do this alone -- apply_actions only ever increments
     contradict_count and leaves the item active; this is the one place that
-    count is actually acted on."""
+    count is actually acted on.
+    """
     deprecated = []
     for item_id, item in items.items():
         if item.get("status", "active") != "active":
@@ -287,7 +291,8 @@ def apply_merges(items: dict, merges: list[dict | L3MergeGroup]) -> list[tuple[s
     whole pipeline a description is allowed to change after creation,
     since this is a deliberate, reviewed step rather than a per-episode
     side effect. Merged-away items are set to status="deprecated" with a
-    merged_into pointer, never hard-deleted, so history stays traceable."""
+    merged_into pointer, never hard-deleted, so history stays traceable.
+    """
     applied = []
     for merge in merges:
         keep_id = _merge_value(merge, "keep_id")
