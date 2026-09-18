@@ -215,6 +215,8 @@ def main() -> int:
         output = format_for_leader(Path(args.bank_dir), args.task_category, args.limit, args.min_support)
     else:
         output = compare_modes(Path(args.predefined_bank), Path(args.dynamic_bank))
+    # CLI result on stdout (including for shell pipelines), not a diagnostic log.
+    # See .claude/rules/logging.md: CLI stdin/stdout interaction is exempt.
     sys.stdout.write(f"{output}\n")
     return 0
 
