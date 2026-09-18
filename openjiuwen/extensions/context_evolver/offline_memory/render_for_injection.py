@@ -13,6 +13,7 @@ the memory stores themselves stay strictly separated.
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 from openjiuwen.extensions.context_evolver.offline_memory import bank_io
@@ -150,7 +151,10 @@ def format_for_leader(bank_dir: Path, task_category: str, limit: int = 5, min_su
         lines.append("### Process & Workflow Notes")
         ranked = sorted(process_notes.items(), key=lambda kv: -kv[1].get("support_count", 0))[:limit]
         for _, item in ranked:
-            lines.append(f"- [{item.get('category', '')}, support={item.get('support_count', 0)}] {item.get('description', '')}")
+            lines.append(
+                f"- [{item.get('category', '')}, support={item.get('support_count', 0)}] "
+                f"{item.get('description', '')}"
+            )
 
     return "\n".join(lines).strip()
 
@@ -184,13 +188,17 @@ def build_arg_parser() -> argparse.ArgumentParser:
     p_agent = sub.add_parser("agent", help="Render L2 memory for one role_type")
     p_agent.add_argument("--bank-dir", required=True)
     p_agent.add_argument("--role", required=True)
-    p_agent.add_argument("--limit", type=int, default=None, help="Cap number of partner-role sections shown (default: no cap)")
+    p_agent.add_argument(
+        "--limit", type=int, default=None, help="Cap number of partner-role sections shown (default: no cap)"
+    )
 
     p_leader = sub.add_parser("leader", help="Render L3 memory for one task_category")
     p_leader.add_argument("--bank-dir", required=True)
     p_leader.add_argument("--task-category", default="general")
     p_leader.add_argument("--limit", type=int, default=5)
-    p_leader.add_argument("--min-support", type=int, default=2, help="Hide playbook items reinforced fewer than N times")
+    p_leader.add_argument(
+        "--min-support", type=int, default=2, help="Hide playbook items reinforced fewer than N times"
+    )
 
     p_compare = sub.add_parser("compare", help="Read-only predefined-vs-dynamic report")
     p_compare.add_argument("--predefined-bank", required=True)
@@ -202,11 +210,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_arg_parser().parse_args()
     if args.command == "agent":
-        print(format_for_agent(Path(args.bank_dir), args.role, args.limit))
+        output = format_for_agent(Path(args.bank_dir), args.role, args.limit)
     elif args.command == "leader":
-        print(format_for_leader(Path(args.bank_dir), args.task_category, args.limit, args.min_support))
-    elif args.command == "compare":
-        print(compare_modes(Path(args.predefined_bank), Path(args.dynamic_bank)))
+        output = format_for_leader(Path(args.bank_dir), args.task_category, args.limit, args.min_support)
+    else:
+        output = compare_modes(Path(args.predefined_bank), Path(args.dynamic_bank))
+    sys.stdout.write(f"{output}\n")
     return 0
 
 
