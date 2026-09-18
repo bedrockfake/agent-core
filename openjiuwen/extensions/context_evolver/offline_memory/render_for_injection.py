@@ -13,9 +13,9 @@ the memory stores themselves stay strictly separated.
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
+from openjiuwen.core.common.logging import memory_logger
 from openjiuwen.extensions.context_evolver.offline_memory import bank_io
 
 
@@ -215,9 +215,7 @@ def main() -> int:
         output = format_for_leader(Path(args.bank_dir), args.task_category, args.limit, args.min_support)
     else:
         output = compare_modes(Path(args.predefined_bank), Path(args.dynamic_bank))
-    # CLI result on stdout (including for shell pipelines), not a diagnostic log.
-    # See .claude/rules/logging.md: CLI stdin/stdout interaction is exempt.
-    sys.stdout.write(f"{output}\n")
+    memory_logger.info("%s", output)
     return 0
 
 
